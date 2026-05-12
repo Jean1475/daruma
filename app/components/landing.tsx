@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { POKE_SETS } from '@/app/data';
 
-// ─── V2 Azul · paleta exacta ───────────────────────────────────────────────
+// ─── Paleta ────────────────────────────────────────────────────────────────
 const BLUE    = 'oklch(38% 0.16 263)';
 const GOLD    = 'oklch(78% 0.13 88)';
 const CREAM   = '#f4efe6';
@@ -16,7 +16,7 @@ const CARD_BD = 'rgba(14,21,56,0.08)';
 const CHIP_TR = 'rgba(14,21,56,0.05)';
 const RADIUS  = 4;
 
-// ─── Fuentes (CSS vars inyectadas por next/font en layout) ─────────────────
+// ─── Fuentes ───────────────────────────────────────────────────────────────
 const FD = 'var(--font-display),"Helvetica Neue",system-ui,sans-serif';
 const FB = 'var(--font-sans),"Helvetica Neue",system-ui,sans-serif';
 const FM = 'var(--font-mono),ui-monospace,"SF Mono",monospace';
@@ -36,7 +36,20 @@ export interface StoreInfo {
   phone: string; email: string; socials: string[];
 }
 
-// ─── ProductPlaceholder ────────────────────────────────────────────────────
+// ─── useMobile ────────────────────────────────────────────────────────────
+function useMobile(breakpoint = 768) {
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    setMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, [breakpoint]);
+  return mobile;
+}
+
+// ─── ProductPlaceholder ───────────────────────────────────────────────────
 function ProductPlaceholder({
   label = 'product shot', aspect = '3/4', big = false, dark = false,
 }: { label?: string; aspect?: string; big?: boolean; dark?: boolean }) {
@@ -60,7 +73,7 @@ function ProductPlaceholder({
   );
 }
 
-// ─── DarumaMark ────────────────────────────────────────────────────────────
+// ─── DarumaMark ───────────────────────────────────────────────────────────
 function DarumaMark({ size = 36 }: { size?: number }) {
   return (
     <Image
@@ -72,7 +85,7 @@ function DarumaMark({ size = 36 }: { size?: number }) {
   );
 }
 
-// ─── Wordmark ──────────────────────────────────────────────────────────────
+// ─── Wordmark ─────────────────────────────────────────────────────────────
 function Wordmark({ size = 18, lightMode = false }: { size?: number; lightMode?: boolean }) {
   const fg    = lightMode ? '#f4efe6' : INK;
   const muted = lightMode ? 'rgba(244,239,230,0.6)' : MUTED;
@@ -91,8 +104,10 @@ function Wordmark({ size = 18, lightMode = false }: { size?: number; lightMode?:
   );
 }
 
-// ─── Nav ───────────────────────────────────────────────────────────────────
+// ─── Nav ──────────────────────────────────────────────────────────────────
 function Nav() {
+  const mobile = useMobile();
+  const [open, setOpen] = useState(false);
   const links = [
     { label: 'Stock',     href: '#stock' },
     { label: 'Eventos',   href: '#events' },
@@ -100,49 +115,86 @@ function Nav() {
     { label: 'Sobre',     href: '#sobre' },
   ];
   return (
-    <nav style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '24px 56px', borderBottom: `1px solid ${LINE}`,
-      background: 'rgba(244,239,230,0.85)', position: 'sticky', top: 0, zIndex: 10,
-      backdropFilter: 'blur(8px)',
-    }}>
-      <Wordmark size={17} />
-      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-        {links.map((l) => (
-          <a key={l.label} href={l.href} style={{
-            padding: '10px 18px', textDecoration: 'none', color: INK,
-            fontFamily: FB, fontSize: 14, fontWeight: 500,
-            borderRadius: 999, transition: 'background .15s',
-          }}>{l.label}</a>
-        ))}
-        <span style={{
-          marginLeft: 12, padding: '8px 14px',
-          background: GOLD, color: INK,
-          fontFamily: FM, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase',
-          borderRadius: 999, whiteSpace: 'nowrap',
-        }}>solo en tienda · no online</span>
-      </div>
-    </nav>
+    <>
+      <nav style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: mobile ? '16px 20px' : '24px 56px',
+        borderBottom: `1px solid ${LINE}`,
+        background: 'rgba(244,239,230,0.92)', position: 'sticky', top: 0, zIndex: 20,
+        backdropFilter: 'blur(8px)',
+      }}>
+        <Wordmark size={mobile ? 15 : 17} />
+
+        {mobile ? (
+          <button
+            onClick={() => setOpen(!open)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, display: 'flex', flexDirection: 'column', gap: 5 }}
+            aria-label="Menú"
+          >
+            <span style={{ display: 'block', width: 22, height: 1.5, background: INK, transition: 'transform .2s, opacity .2s', transform: open ? 'translateY(6.5px) rotate(45deg)' : 'none' }} />
+            <span style={{ display: 'block', width: 22, height: 1.5, background: INK, opacity: open ? 0 : 1, transition: 'opacity .2s' }} />
+            <span style={{ display: 'block', width: 22, height: 1.5, background: INK, transition: 'transform .2s, opacity .2s', transform: open ? 'translateY(-6.5px) rotate(-45deg)' : 'none' }} />
+          </button>
+        ) : (
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+            {links.map((l) => (
+              <a key={l.label} href={l.href} style={{
+                padding: '10px 18px', textDecoration: 'none', color: INK,
+                fontFamily: FB, fontSize: 14, fontWeight: 500,
+                borderRadius: 999, transition: 'background .15s',
+              }}>{l.label}</a>
+            ))}
+            <span style={{
+              marginLeft: 12, padding: '8px 14px',
+              background: GOLD, color: INK,
+              fontFamily: FM, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase',
+              borderRadius: 999, whiteSpace: 'nowrap',
+            }}>solo en tienda · no online</span>
+          </div>
+        )}
+      </nav>
+
+      {/* Mobile drawer */}
+      {mobile && open && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 19,
+          background: 'rgba(244,239,230,0.97)', display: 'flex', flexDirection: 'column',
+          paddingTop: 80, paddingInline: 24, gap: 0,
+        }}>
+          {links.map((l) => (
+            <a key={l.label} href={l.href} onClick={() => setOpen(false)} style={{
+              display: 'block', padding: '20px 0', textDecoration: 'none', color: INK,
+              fontFamily: FD, fontSize: 28, fontWeight: 600, letterSpacing: -0.5,
+              borderBottom: `1px solid ${LINE}`,
+            }}>{l.label}</a>
+          ))}
+          <div style={{ marginTop: 28, padding: '10px 16px', background: GOLD, color: INK, borderRadius: 999, fontFamily: FM, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', alignSelf: 'flex-start' }}>
+            solo en tienda · no online
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
-// ─── SectionHead ───────────────────────────────────────────────────────────
+// ─── SectionHead ──────────────────────────────────────────────────────────
 function SectionHead({ kicker, title, sub, right }: {
   kicker?: string; title: string; sub?: string; right?: React.ReactNode;
 }) {
+  const mobile = useMobile();
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 40, marginBottom: 40 }}>
+    <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 40, marginBottom: mobile ? 28 : 40, flexWrap: 'wrap' }}>
       <div style={{ maxWidth: 720 }}>
         {kicker && (
           <div style={{ fontFamily: FM, fontSize: 11, color: BLUE, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 14 }}>
             {kicker}
           </div>
         )}
-        <h2 style={{ margin: 0, fontFamily: FD, fontSize: 44, fontWeight: 600, letterSpacing: -1.2, lineHeight: 1, color: INK, textWrap: 'pretty' as any }}>
+        <h2 style={{ margin: 0, fontFamily: FD, fontSize: mobile ? 30 : 44, fontWeight: 600, letterSpacing: mobile ? -0.6 : -1.2, lineHeight: 1.1, color: INK, textWrap: 'pretty' as any }}>
           {title}
         </h2>
         {sub && (
-          <p style={{ margin: '18px 0 0', fontFamily: FB, fontSize: 16, lineHeight: 1.55, color: MUTED, maxWidth: 560, textWrap: 'pretty' as any }}>
+          <p style={{ margin: '14px 0 0', fontFamily: FB, fontSize: mobile ? 14 : 16, lineHeight: 1.55, color: MUTED, maxWidth: 560, textWrap: 'pretty' as any }}>
             {sub}
           </p>
         )}
@@ -152,13 +204,14 @@ function SectionHead({ kicker, title, sub, right }: {
   );
 }
 
-// ─── FiltersBar ────────────────────────────────────────────────────────────
+// ─── FiltersBar ───────────────────────────────────────────────────────────
 function FiltersBar({ cat, setCat, query, setQuery, set, setSet, total, count }: {
   cat: string; setCat: (v: string) => void;
   query: string; setQuery: (v: string) => void;
   set: string; setSet: (v: string) => void;
   total: number; count: number;
 }) {
+  const mobile = useMobile();
   const cats = [
     { key: 'all',     label: 'Todo' },
     { key: 'pokemon', label: 'Pokémon' },
@@ -166,13 +219,14 @@ function FiltersBar({ cat, setCat, query, setQuery, set, setSet, total, count }:
     { key: 'comics',  label: 'Cómics' },
   ];
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '20px 0', borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
-      <div style={{ display: 'flex', gap: 6, padding: 4, background: CHIP_TR, borderRadius: 999 }}>
+    <div style={{ display: 'flex', alignItems: mobile ? 'stretch' : 'center', flexDirection: mobile ? 'column' : 'row', gap: mobile ? 10 : 14, flexWrap: 'wrap', padding: '16px 0', borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
+      {/* Category pills */}
+      <div style={{ display: 'flex', gap: 4, padding: 4, background: CHIP_TR, borderRadius: 999, flexWrap: 'wrap' }}>
         {cats.map((c) => {
           const on = cat === c.key;
           return (
             <button key={c.key} onClick={() => setCat(c.key)} style={{
-              padding: '9px 16px', fontFamily: FB, fontSize: 13, fontWeight: 500,
+              padding: '8px 14px', fontFamily: FB, fontSize: 13, fontWeight: 500,
               border: 'none', cursor: 'pointer', borderRadius: 999,
               background: on ? BLUE : 'transparent',
               color: on ? CREAM : MUTED,
@@ -182,6 +236,7 @@ function FiltersBar({ cat, setCat, query, setQuery, set, setSet, total, count }:
         })}
       </div>
 
+      {/* Expansion filter */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', borderRadius: 999, border: `1px solid ${LINE}` }}>
         <span style={{ fontFamily: FM, fontSize: 11, color: MUTED, textTransform: 'uppercase', letterSpacing: 1 }}>expansión</span>
         <select value={set} onChange={(e) => setSet(e.target.value)} style={{
@@ -193,7 +248,8 @@ function FiltersBar({ cat, setCat, query, setQuery, set, setSet, total, count }:
         </select>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 18px', borderRadius: 999, border: `1px solid ${LINE}`, minWidth: 260, flex: '0 1 320px', marginLeft: 'auto' }}>
+      {/* Search */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 18px', borderRadius: 999, border: `1px solid ${LINE}`, flex: mobile ? '1 1 auto' : '0 1 320px', marginLeft: mobile ? 0 : 'auto' }}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke={MUTED} strokeWidth="1.5">
           <circle cx="6" cy="6" r="4.5" /><path d="M9.5 9.5L12.5 12.5" strokeLinecap="round" />
         </svg>
@@ -209,12 +265,12 @@ function FiltersBar({ cat, setCat, query, setQuery, set, setSet, total, count }:
   );
 }
 
-// ─── ProductCard ───────────────────────────────────────────────────────────
+// ─── ProductCard ──────────────────────────────────────────────────────────
 function ProductCard({ item }: { item: Product }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 12, background: CARD_BG, borderRadius: RADIUS, border: `1px solid ${CARD_BD}`, transition: 'transform .25s, box-shadow .25s' }}>
       <div style={{ position: 'relative' }}>
-        <ProductPlaceholder aspect={item.cat === 'pokemon' ? '3/4' : '3/4'} label={item.cat} />
+        <ProductPlaceholder aspect="3/4" label={item.cat} />
         <span style={{
           position: 'absolute', top: 8, left: 8, padding: '3px 8px',
           fontFamily: FM, fontSize: 9, letterSpacing: 1, textTransform: 'uppercase',
@@ -239,32 +295,47 @@ function ProductCard({ item }: { item: Product }) {
   );
 }
 
-// ─── EventCard ─────────────────────────────────────────────────────────────
+// ─── EventCard ────────────────────────────────────────────────────────────
 function EventCard({ ev, accentDate = false }: { ev: Event; accentDate?: boolean }) {
+  const mobile = useMobile();
   const dateBg  = accentDate ? GOLD : BLUE;
   const dateFg  = accentDate ? INK  : CREAM;
   return (
     <article style={{
-      display: 'grid', gridTemplateColumns: '108px 1fr auto', gap: 28, alignItems: 'center',
-      padding: 24, background: CARD_BG, borderRadius: RADIUS, border: `1px solid ${CARD_BD}`,
+      display: mobile ? 'flex' : 'grid',
+      gridTemplateColumns: mobile ? undefined : '108px 1fr auto',
+      flexDirection: mobile ? 'column' : undefined,
+      gap: mobile ? 16 : 28,
+      padding: mobile ? 18 : 24,
+      background: CARD_BG, borderRadius: RADIUS, border: `1px solid ${CARD_BD}`,
     }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '14px 0', borderRadius: RADIUS, background: dateBg, color: dateFg }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: mobile ? 'row' : 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: mobile ? '10px 18px' : '14px 0',
+        borderRadius: RADIUS,
+        background: dateBg, color: dateFg,
+        gap: mobile ? 8 : 0,
+        alignSelf: mobile ? 'flex-start' : undefined,
+      }}>
         <span style={{ fontFamily: FM, fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', opacity: .7 }}>{ev.date.dow}</span>
-        <span style={{ fontFamily: FD, fontSize: 36, fontWeight: 600, lineHeight: 1, marginTop: 4 }}>{ev.date.d}</span>
-        <span style={{ fontFamily: FM, fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 4 }}>{ev.date.m}</span>
+        <span style={{ fontFamily: FD, fontSize: mobile ? 28 : 36, fontWeight: 600, lineHeight: 1 }}>{ev.date.d}</span>
+        <span style={{ fontFamily: FM, fontSize: 10, letterSpacing: 1.5, textTransform: 'uppercase' }}>{ev.date.m}</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <span style={{ padding: '3px 9px', fontFamily: FM, fontSize: 10, letterSpacing: 1, textTransform: 'uppercase', background: BLUE, color: CREAM, borderRadius: 999 }}>
             {ev.badge}
           </span>
           <span style={{ fontFamily: FM, fontSize: 11, color: MUTED, letterSpacing: 0.5 }}>{ev.when}</span>
         </div>
-        <h3 style={{ margin: 0, fontFamily: FD, fontSize: 22, fontWeight: 600, letterSpacing: -0.4, color: INK, lineHeight: 1.15 }}>{ev.title}</h3>
-        <p style={{ margin: 0, fontFamily: FB, fontSize: 14, lineHeight: 1.5, color: MUTED, maxWidth: 540 }}>{ev.desc}</p>
+        <h3 style={{ margin: 0, fontFamily: FD, fontSize: mobile ? 18 : 22, fontWeight: 600, letterSpacing: -0.4, color: INK, lineHeight: 1.15 }}>{ev.title}</h3>
+        <p style={{ margin: 0, fontFamily: FB, fontSize: 14, lineHeight: 1.5, color: MUTED }}>{ev.desc}</p>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
-        <span style={{ fontFamily: FD, fontSize: 20, fontWeight: 600, color: INK }}>{ev.price}</span>
+      <div style={{ display: 'flex', flexDirection: mobile ? 'row' : 'column', alignItems: mobile ? 'center' : 'flex-end', justifyContent: mobile ? 'space-between' : undefined, gap: 8 }}>
+        <span style={{ fontFamily: FD, fontSize: mobile ? 18 : 20, fontWeight: 600, color: INK }}>{ev.price}</span>
         <button style={{ padding: '9px 16px', borderRadius: 999, background: 'transparent', border: `1px solid ${LINE}`, color: INK, fontFamily: FB, fontSize: 13, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap' }}>
           Apúntate →
         </button>
@@ -273,7 +344,7 @@ function EventCard({ ev, accentDate = false }: { ev: Event; accentDate?: boolean
   );
 }
 
-// ─── MapSVG ────────────────────────────────────────────────────────────────
+// ─── MapSVG ───────────────────────────────────────────────────────────────
 function MapSVG() {
   return (
     <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', background: '#ece7dc', borderRadius: RADIUS, overflow: 'hidden', border: `1px solid ${LINE}` }}>
@@ -296,7 +367,7 @@ function MapSVG() {
   );
 }
 
-// ─── VisitBlock ────────────────────────────────────────────────────────────
+// ─── VisitBlock ───────────────────────────────────────────────────────────
 function VisitBlock({ title, rows }: { title: string; rows: string[][] }) {
   return (
     <div>
@@ -316,7 +387,7 @@ function VisitBlock({ title, rows }: { title: string; rows: string[][] }) {
   );
 }
 
-// ─── Footer ────────────────────────────────────────────────────────────────
+// ─── Footer ───────────────────────────────────────────────────────────────
 function FooterCol({ title, items }: { title: string; items: string[] }) {
   return (
     <div>
@@ -329,12 +400,17 @@ function FooterCol({ title, items }: { title: string; items: string[] }) {
 }
 
 function Footer({ storeInfo }: { storeInfo: StoreInfo }) {
+  const mobile = useMobile();
   return (
-    <footer style={{ padding: '56px 56px 40px', borderTop: `1px solid ${LINE}`, background: CREAM, display: 'flex', flexDirection: 'column', gap: 48 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 60 }}>
-        <div>
-          <Wordmark size={22} />
-          <p style={{ marginTop: 24, fontFamily: FB, fontSize: 14, lineHeight: 1.6, color: MUTED, maxWidth: 360 }}>
+    <footer style={{ padding: mobile ? '48px 20px 32px' : '56px 56px 40px', borderTop: `1px solid ${LINE}`, background: CREAM, display: 'flex', flexDirection: 'column', gap: 48 }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: mobile ? '1fr 1fr' : '2fr 1fr 1fr 1fr',
+        gap: mobile ? 32 : 60,
+      }}>
+        <div style={{ gridColumn: mobile ? '1 / -1' : undefined }}>
+          <Wordmark size={mobile ? 18 : 22} />
+          <p style={{ marginTop: 20, fontFamily: FB, fontSize: 14, lineHeight: 1.6, color: MUTED, maxWidth: 360 }}>
             Tienda de cartas Pokémon, manga y cómics en Bilbao. Sin tienda online — si lo ves aquí, está esperándote allí.
           </p>
         </div>
@@ -342,7 +418,7 @@ function Footer({ storeInfo }: { storeInfo: StoreInfo }) {
         <FooterCol title="Comunidad"  items={['Próximos eventos','Liga semanal','Discord','Newsletter']} />
         <FooterCol title="Contacto"   items={[storeInfo.email, storeInfo.phone, storeInfo.socials[0]]} />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 24, borderTop: `1px solid ${LINE}`, fontFamily: FM, fontSize: 11, color: MUTED, letterSpacing: 1, textTransform: 'uppercase' }}>
+      <div style={{ display: 'flex', flexDirection: mobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: mobile ? 'flex-start' : 'center', gap: 10, paddingTop: 24, borderTop: `1px solid ${LINE}`, fontFamily: FM, fontSize: 11, color: MUTED, letterSpacing: 1, textTransform: 'uppercase' }}>
         <span>© 2026 daruma · Leganés</span>
         <span>sin tienda online · solo presencial</span>
       </div>
@@ -350,60 +426,70 @@ function Footer({ storeInfo }: { storeInfo: StoreInfo }) {
   );
 }
 
-// ─── Hero V2 Azul ──────────────────────────────────────────────────────────
+// ─── Hero ─────────────────────────────────────────────────────────────────
 function HeroAzul() {
+  const mobile = useMobile();
   return (
-    <section style={{ background: BLUE, color: CREAM, height: 'calc(100vh - 73px)', display: 'grid', gridTemplateColumns: '1fr 1fr', position: 'relative', overflow: 'hidden', padding: '0 80px' }}>
-      {/* Silueta daruma de fondo */}
+    <section style={{
+      background: BLUE, color: CREAM,
+      minHeight: mobile ? 'auto' : 'calc(100vh - 73px)',
+      display: 'grid',
+      gridTemplateColumns: mobile ? '1fr' : '1fr 1fr',
+      position: 'relative', overflow: 'hidden',
+      padding: mobile ? '0 20px' : '0 80px',
+    }}>
       <img src="/assets/daruma-logo.png" alt=""
         style={{ position: 'absolute', right: -180, bottom: -180, width: 720, height: 720, opacity: 0.08, filter: 'saturate(0)', pointerEvents: 'none', zIndex: 0 }} />
 
-      {/* Columna izquierda: texto */}
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '80px 40px 80px 0' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px', background: GOLD, color: INK, borderRadius: 999, fontFamily: FM, fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 28, alignSelf: 'flex-start' }}>
+      {/* Texto */}
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: mobile ? '56px 0 40px' : '80px 40px 80px 0' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px', background: GOLD, color: INK, borderRadius: 999, fontFamily: FM, fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 24, alignSelf: 'flex-start' }}>
           ★ punto fuerte · Pokémon TCG
         </div>
-        <h1 style={{ margin: 0, fontFamily: FD, fontSize: 72, fontWeight: 600, letterSpacing: -3, lineHeight: 1.0, color: CREAM }}>
+        <h1 style={{ margin: 0, fontFamily: FD, fontSize: mobile ? 44 : 72, fontWeight: 600, letterSpacing: mobile ? -1.5 : -3, lineHeight: 1.05, color: CREAM }}>
           La tienda<br />
           donde <em style={{ fontStyle: 'italic', fontWeight: 400, color: GOLD }}>pides</em><br />
           <em style={{ fontStyle: 'italic', fontWeight: 400, color: GOLD }}>el deseo</em><br />
           y vienes<br />
           a buscarlo.
         </h1>
-        <p style={{ marginTop: 28, fontFamily: FB, fontSize: 17, lineHeight: 1.5, color: 'rgba(244,239,230,0.75)', maxWidth: 460 }}>
+        <p style={{ marginTop: 24, fontFamily: FB, fontSize: mobile ? 15 : 17, lineHeight: 1.55, color: 'rgba(244,239,230,0.75)', maxWidth: 460 }}>
           Daruma · cartas Pokémon, manga y cómics en Leganés. Pinta el primer ojo cuando entras buscando esa carta. El segundo cuando la encuentras.
         </p>
-        <div style={{ display: 'flex', gap: 12, marginTop: 36 }}>
-          <a href="#stock" style={{ padding: '15px 24px', borderRadius: 999, background: GOLD, color: INK, fontFamily: FB, fontSize: 14, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', gap: 12, marginTop: 32, flexWrap: 'wrap' }}>
+          <a href="#stock" style={{ padding: '14px 22px', borderRadius: 999, background: GOLD, color: INK, fontFamily: FB, fontSize: 14, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10 }}>
             Ver el stock
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <path d="M2 6.5h9M6.5 2l4.5 4.5L6.5 11" />
             </svg>
           </a>
-          <a href="#visit" style={{ padding: '15px 24px', borderRadius: 999, background: 'transparent', color: CREAM, border: '1px solid rgba(244,239,230,0.3)', fontFamily: FB, fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
+          <a href="#visit" style={{ padding: '14px 22px', borderRadius: 999, background: 'transparent', color: CREAM, border: '1px solid rgba(244,239,230,0.3)', fontFamily: FB, fontSize: 14, fontWeight: 500, textDecoration: 'none' }}>
             Visítanos
           </a>
         </div>
       </div>
 
-      {/* Columna derecha: imagen grande */}
-      <div style={{ position: 'relative', overflow: 'hidden' }}>
-        <Image
-          src="/Mega-dream-card-waver.webp"
-          alt="Colección destacada Daruma"
-          fill
-          style={{ objectFit: 'contain', objectPosition: 'center' }}
-          priority
-        />
-      </div>
+      {/* Imagen */}
+      {!mobile && (
+        <div style={{ position: 'relative', overflow: 'hidden' }}>
+          <Image
+            src="/Mega-dream-card-waver.webp"
+            alt="Colección destacada Daruma"
+            fill
+            style={{ objectFit: 'contain', objectPosition: 'center' }}
+            priority
+          />
+        </div>
+      )}
     </section>
   );
 }
 
-// ─── Sección Filosofía ─────────────────────────────────────────────────────
+// ─── Filosofía ────────────────────────────────────────────────────────────
 function FilosofiaBanda() {
+  const mobile = useMobile();
   return (
-    <section style={{ padding: '96px 56px', borderBottom: `1px solid ${LINE}`, background: '#ffffff' }}>
+    <section style={{ padding: mobile ? '56px 20px' : '96px 56px', borderBottom: `1px solid ${LINE}`, background: '#ffffff' }}>
       <SectionHead
         kicker="★ filosofía Daruma"
         title="Una tienda física para una afición física."
@@ -413,8 +499,9 @@ function FilosofiaBanda() {
   );
 }
 
-// ─── Sección Stock ─────────────────────────────────────────────────────────
+// ─── Stock ────────────────────────────────────────────────────────────────
 function StockSection({ products }: { products: Product[] }) {
+  const mobile = useMobile();
   const [cat, setCat]     = useState('all');
   const [query, setQuery] = useState('');
   const [set, setSet]     = useState('Todas');
@@ -430,16 +517,16 @@ function StockSection({ products }: { products: Product[] }) {
   }), [cat, query, set, products]);
 
   return (
-    <section id="stock" style={{ padding: '96px 56px' }}>
+    <section id="stock" style={{ padding: mobile ? '56px 20px' : '96px 56px' }}>
       <SectionHead
         kicker="★ Stock destacado · actualizado hoy"
         title="Lo que tenemos ahora mismo en tienda."
         sub="Selección rotatoria. Lo bueno vuela — si ves algo aquí, pásate cuanto antes. Esto es solo una muestra; pregúntanos por lo que busques."
       />
       <FiltersBar cat={cat} setCat={setCat} query={query} setQuery={setQuery} set={set} setSet={setSet} total={products.length} count={items.length} />
-      <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+      <div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: mobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: mobile ? 14 : 24 }}>
         {items.length === 0 ? (
-          <div style={{ gridColumn: '1 / -1', padding: '64px 0', textAlign: 'center', fontFamily: FB, fontSize: 16, color: MUTED }}>
+          <div style={{ gridColumn: '1 / -1', padding: '48px 0', textAlign: 'center', fontFamily: FB, fontSize: 16, color: MUTED }}>
             Ahora mismo no tenemos eso en stock — escríbenos y te avisamos cuando llegue.
           </div>
         ) : items.slice(0, 8).map((it) => <ProductCard key={it.id} item={it} />)}
@@ -448,34 +535,41 @@ function StockSection({ products }: { products: Product[] }) {
   );
 }
 
-// ─── Sección Eventos ───────────────────────────────────────────────────────
+// ─── Eventos ──────────────────────────────────────────────────────────────
 function EventsSection({ events }: { events: Event[] }) {
+  const mobile = useMobile();
   return (
-    <section id="events" style={{ padding: '96px 56px', borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
+    <section id="events" style={{ padding: mobile ? '56px 20px' : '96px 56px', borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
       <SectionHead
         kicker="★ próximos eventos"
         title="Pásate también a jugar y hacer comunidad."
         sub="Torneos Pokémon cada sábado, ligas para peques, prereleases y club de manga. La inscripción se hace en tienda o por WhatsApp."
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {events.map((ev, i) => <EventCard key={ev.id} ev={ev} accentDate={i === 0} />)}
       </div>
     </section>
   );
 }
 
-// ─── Sección Visítanos ─────────────────────────────────────────────────────
+// ─── Visítanos ────────────────────────────────────────────────────────────
 function VisitSection({ storeInfo }: { storeInfo: StoreInfo }) {
+  const mobile = useMobile();
   return (
-    <section id="visit" style={{ padding: '96px 56px' }}>
+    <section id="visit" style={{ padding: mobile ? '56px 20px' : '96px 56px' }}>
       <SectionHead
         kicker="★ cómo visitarnos"
         title="Aquí estamos. Pásate cuando quieras."
         sub="A dos minutos del metro Leganés Central. Si nos avisas qué vienes a ver, te lo tenemos sacado."
       />
-      <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 56, alignItems: 'start' }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: mobile ? '1fr' : '1.3fr 1fr',
+        gap: mobile ? 32 : 56,
+        alignItems: 'start',
+      }}>
         <MapSVG />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
           <VisitBlock title="Dirección" rows={storeInfo.address.map((a) => [a])} />
           <VisitBlock title="Horario"   rows={storeInfo.hours.map(([d, h]) => [d, h])} />
           <VisitBlock title="Contacto"  rows={[[storeInfo.phone], [storeInfo.email], storeInfo.socials]} />
@@ -485,13 +579,12 @@ function VisitSection({ storeInfo }: { storeInfo: StoreInfo }) {
   );
 }
 
-// ─── Landing principal ─────────────────────────────────────────────────────
+// ─── Landing ──────────────────────────────────────────────────────────────
 export function Landing({ products = [], events = [], storeInfo }: {
   products?: Product[];
   events?: Event[];
   storeInfo?: StoreInfo;
 }) {
-  // reveal-on-scroll
   useEffect(() => {
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('in'); });
