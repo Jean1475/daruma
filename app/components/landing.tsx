@@ -120,7 +120,7 @@ function Nav() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: mobile ? '16px 20px' : '24px 56px',
         borderBottom: `1px solid ${LINE}`,
-        background: 'rgba(244,239,230,0.92)', position: 'sticky', top: 0, zIndex: 20,
+        background: 'rgba(244,239,230,0.92)', position: 'sticky', top: 0, zIndex: 40,
         backdropFilter: 'blur(8px)',
       }}>
         <Wordmark size={mobile ? 15 : 17} />
@@ -156,11 +156,14 @@ function Nav() {
 
       {/* Mobile drawer */}
       {mobile && open && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 19,
-          background: 'rgba(244,239,230,0.97)', display: 'flex', flexDirection: 'column',
-          paddingTop: 80, paddingInline: 24, gap: 0,
-        }}>
+        <div
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+          style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 30,
+            background: 'rgba(244,239,230,0.97)', display: 'flex', flexDirection: 'column',
+            paddingTop: 80, paddingInline: 24, gap: 0,
+          }}
+        >
           {links.map((l) => (
             <a key={l.label} href={l.href} onClick={() => setOpen(false)} style={{
               display: 'block', padding: '20px 0', textDecoration: 'none', color: INK,
@@ -438,8 +441,10 @@ function HeroAzul() {
       position: 'relative', overflow: 'hidden',
       padding: mobile ? '0 20px' : '0 80px',
     }}>
-      <img src="/assets/daruma-logo.png" alt=""
-        style={{ position: 'absolute', right: -180, bottom: -180, width: 720, height: 720, opacity: 0.08, filter: 'saturate(0)', pointerEvents: 'none', zIndex: 0 }} />
+      {!mobile && (
+        <img src="/assets/daruma-logo.png" alt=""
+          style={{ position: 'absolute', right: -180, bottom: -180, width: 720, height: 720, opacity: 0.08, filter: 'saturate(0)', pointerEvents: 'none', zIndex: 0 }} />
+      )}
 
       {/* Texto */}
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: mobile ? '56px 0 40px' : '80px 40px 80px 0' }}>
