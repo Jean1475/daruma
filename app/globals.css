@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+
+  --color-daruma-blue: oklch(38% 0.16 263);
+  --color-daruma-blue-dk: oklch(28% 0.14 263);
+  --color-daruma-gold: oklch(78% 0.13 88);
+  --color-daruma-gold-sf: oklch(85% 0.09 88);
+  --color-daruma-cream: #f4efe6;
+  --color-daruma-off: #f8f6f1;
+  --color-daruma-ink: #0e1538;
+  --color-daruma-coal: #0d0a0c;
+  --color-daruma-carbon: #13100f;
+
+  --radius-card: 4px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --background: var(--color-daruma-cream);
+  --foreground: var(--color-daruma-ink);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: var(--color-daruma-coal);
+    --foreground: var(--color-daruma-off);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+input, select, button {
+  font-family: inherit;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 4px;
+}
+
+*::selection {
+  background: var(--color-daruma-gold);
+  color: #1a1614;
+}
+
+a:hover {
+  opacity: .85;
+}
+
+button {
+  transition: opacity .15s, background .15s, transform .15s;
+}
+
+button:hover {
+  opacity: .85;
+}
+
+/* Reveal-on-scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .8s ease-out, transform .8s ease-out;
+}
+
+.reveal.in {
+  opacity: 1;
+  transform: none;
 }

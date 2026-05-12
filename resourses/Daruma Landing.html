@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Daruma · Tienda de cartas, manga y cómics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; }
+  body { font-family: "DM Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  input, select, button { font-family: inherit; }
+  select { appearance: none; -webkit-appearance: none; padding-right: 4px; }
+  *::selection { background: oklch(78% 0.13 88); color: #1a1614; }
+  a:hover { opacity: .85; }
+  button { transition: opacity .15s, background .15s, transform .15s; }
+  button:hover { opacity: .85; }
+  .dc-card { transition: none !important; }
+
+  /* Reveal-on-scroll: each section fades in from below. Pure CSS via the
+     :has-scroll-state proposal would be cleaner but isn't widely shipped;
+     we'll bind IntersectionObserver from app.jsx instead. */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .8s ease-out, transform .8s ease-out; }
+  .reveal.in { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="sections.jsx"></script>
+<script type="text/babel" src="landing.jsx"></script>
+
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "v1_tema": "claro"
+  }/*EDITMODE-END*/;
+
+  function App() {
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+    // Pick V1's sub-palette from the tweak.
+    const v1Theme = THEMES[
+      t.v1_tema === 'crema'  ? 'v1_crema'  :
+      t.v1_tema === 'oscuro' ? 'v1_oscuro' :
+                                'v1_claro'
+    ];
+
+    return (
+      <React.Fragment>
+        <DesignCanvas minScale={0.05} maxScale={2}>
+          <DCSection id="daruma"
+            title="Daruma · Landing"
+            subtitle="Tres direcciones visuales · scroll cada una para verla entera">
+            <DCArtboard id="v1" label="V1 · Editorial crema" width={1280} height={3600}
+              style={{ background: v1Theme.bg }}>
+              <Landing theme={v1Theme} variant="editorial" />
+            </DCArtboard>
+            <DCArtboard id="v2" label="V2 · Azul Daruma" width={1280} height={3600}
+              style={{ background: THEMES.v2.bg }}>
+              <Landing theme={THEMES.v2} variant="azul" />
+            </DCArtboard>
+            <DCArtboard id="v3" label="V3 · Vitrina oscura" width={1280} height={3800}
+              style={{ background: THEMES.v3.bg }}>
+              <Landing theme={THEMES.v3} variant="vitrina" />
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+
+        <TweaksPanel title="Tweaks · Daruma">
+          <TweakSection label="V1 · Editorial">
+            <TweakRadio
+              label="Fondo"
+              value={t.v1_tema}
+              options={['claro', 'crema', 'oscuro']}
+              onChange={(v) => setTweak('v1_tema', v)}
+            />
+            <div style={{
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: 12, color: '#6b6258', lineHeight: 1.5, marginTop: 8,
+            }}>
+              Cambia el tono base de la primera variante. V2 y V3 se mantienen
+              fieles a su dirección visual.
+            </div>
+          </TweakSection>
+        </TweaksPanel>
+      </React.Fragment>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>
