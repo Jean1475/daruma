@@ -1,4 +1,7 @@
-export const POKEMON_STOCK = [
+// data.jsx — placeholder catalogue, events, visit info
+// Friki-suave tone, todo en español.
+
+const POKEMON_STOCK = [
   { id: 'p1', name: 'Charizard ex · SIR',       set: 'Obsidian Flames',   meta: 'Special Illustration Rare', tag: 'Chase' },
   { id: 'p2', name: 'Pikachu with Grey Felt',   set: 'Van Gogh Promo',     meta: 'Promo · 085/SVP',          tag: 'Promo' },
   { id: 'p3', name: 'Umbreon V Alt Art',        set: 'Lost Origin',        meta: 'Alt Art · 215/196',        tag: 'Alt Art' },
@@ -9,7 +12,7 @@ export const POKEMON_STOCK = [
   { id: 'p8', name: 'Rayquaza VMAX',            set: 'Evolving Skies',     meta: 'Alt Art · 218/203',        tag: 'Alt Art' },
 ];
 
-export const MANGA_STOCK = [
+const MANGA_STOCK = [
   { id: 'm1', name: 'Chainsaw Man · Vol. 16',   set: 'Norma',              meta: 'Tomo individual',          tag: 'Nuevo' },
   { id: 'm2', name: 'Jujutsu Kaisen · Vol. 26', set: 'Norma',              meta: 'Tomo individual',          tag: 'Nuevo' },
   { id: 'm3', name: 'Berserk Deluxe · Vol. 7',  set: 'Panini',             meta: 'Edición Deluxe · 700pp',   tag: 'Deluxe' },
@@ -18,7 +21,7 @@ export const MANGA_STOCK = [
   { id: 'm6', name: 'Vagabond · Kanzenban 12',  set: 'Ivrea',              meta: 'Edición Kanzenban',        tag: 'Deluxe' },
 ];
 
-export const COMICS_STOCK = [
+const COMICS_STOCK = [
   { id: 'c1', name: 'Saga · Volumen 11',        set: 'Image · Planeta',    meta: 'TPB · 152pp',              tag: 'Nuevo' },
   { id: 'c2', name: 'Daredevil: Born Again',    set: 'Marvel',             meta: 'Marvel Premiere',          tag: 'Clásico' },
   { id: 'c3', name: 'Sandman · Tomo I',         set: 'ECC',                meta: 'Edición Deluxe',           tag: 'Deluxe' },
@@ -27,15 +30,15 @@ export const COMICS_STOCK = [
   { id: 'c6', name: 'Paper Girls · Integral',   set: 'Planeta',            meta: 'Tomo único · 800pp',       tag: 'Integral' },
 ];
 
-export const ALL_STOCK = [
+const ALL_STOCK = [
   ...POKEMON_STOCK.map((x) => ({ ...x, cat: 'pokemon' })),
   ...MANGA_STOCK.map((x) => ({ ...x, cat: 'manga' })),
   ...COMICS_STOCK.map((x) => ({ ...x, cat: 'comics' })),
 ];
 
-export const POKE_SETS = ['Todas', 'Scarlet & Violet 151', 'Obsidian Flames', 'Lost Origin', 'Silver Tempest', 'Pokémon GO', 'Surging Sparks', 'Evolving Skies', 'Van Gogh Promo'];
+const POKE_SETS = ['Todas', 'Scarlet & Violet 151', 'Obsidian Flames', 'Lost Origin', 'Silver Tempest', 'Pokémon GO', 'Surging Sparks', 'Evolving Skies', 'Van Gogh Promo'];
 
-export const EVENTS = [
+const EVENTS = [
   {
     id: 'e1',
     date: { d: '16', m: 'MAY', dow: 'Sáb' },
@@ -74,7 +77,7 @@ export const EVENTS = [
   },
 ];
 
-export const VISIT = {
+const VISIT = {
   address: ['Calle Manga, 13 · Bajo', '48005 Bilbao'],
   hours: [
     ['Lunes – Viernes', '17:00 – 21:00'],
@@ -85,3 +88,5 @@ export const VISIT = {
   email: 'hola@daruma.shop',
   socials: ['@daruma.shop', '@darumastore'],
 };
+
+Object.assign(window, { POKEMON_STOCK, MANGA_STOCK, COMICS_STOCK, ALL_STOCK, POKE_SETS, EVENTS, VISIT });

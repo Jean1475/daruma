@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Daruma · Tienda de cartas, manga y cómics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;700;900&family=Zen+Antique&display=swap" rel="stylesheet" />
+
+<style>
+  html, body { margin: 0; padding: 0; background: #f4efe6; }
+  body { font-family: "DM Sans", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  input, select, button { font-family: inherit; }
+  select { appearance: none; -webkit-appearance: none; padding-right: 4px; }
+  *::selection { background: oklch(78% 0.13 88); color: #0e1538; }
+  a:hover { opacity: .85; }
+  button { transition: opacity .15s, background .15s, transform .15s; }
+  button:hover { opacity: .85; }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="data.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="sections.jsx"></script>
+<script type="text/babel" src="landing.jsx"></script>
+
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "marquee_velocidad": 90,
+    "marquee_visible": true
+  }/*EDITMODE-END*/;
+
+  function App() {
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+    return (
+      <React.Fragment>
+        <Landing
+          theme={THEMES.v2}
+          marqueeSpeed={t.marquee_velocidad}
+          marqueeVisible={t.marquee_visible}
+        />
+
+        <TweaksPanel title="Tweaks · Daruma">
+          <TweakSection label="Carrusel de marcas">
+            <TweakToggle
+              label="Mostrar carrusel"
+              value={t.marquee_visible}
+              onChange={(v) => setTweak('marquee_visible', v)}
+            />
+            <TweakSlider
+              label="Velocidad (seg/ciclo)"
+              value={t.marquee_velocidad}
+              min={20} max={120} step={5}
+              onChange={(v) => setTweak('marquee_velocidad', v)}
+            />
+            <div style={{
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: 12, color: '#6b6258', lineHeight: 1.5, marginTop: 8,
+            }}>
+              Pasa el ratón por encima del carrusel para pausarlo. Más segundos = más lento.
+            </div>
+          </TweakSection>
+        </TweaksPanel>
+      </React.Fragment>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>
