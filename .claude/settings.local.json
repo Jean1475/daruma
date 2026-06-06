@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(node *)",
+      "Bash(npm run *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\jeanp\\\\Documents\\\\Proyectos\\\\Daruma\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "WebFetch(domain:cardzone.es)",
+      "Bash(npx tsc *)",
+      "Bash(copy \"C:\\\\Users\\\\jeanp\\\\Documents\\\\Proyectos\\\\Daruma\\\\fotos\\\\*\" \"C:\\\\Users\\\\jeanp\\\\Documents\\\\Proyectos\\\\Daruma\\\\public\\\\fotos\\\\\")",
+      "Bash(mkdir -p /mnt/c/Users/jeanp/Documents/Proyectos/Daruma/public/fotos)",
+      "Bash(cp /mnt/c/Users/jeanp/Documents/Proyectos/Daruma/fotos/* /mnt/c/Users/jeanp/Documents/Proyectos/Daruma/public/fotos/)",
+      "Read(//mnt/c/Users/jeanp/Documents/Proyectos/Daruma/public/**)"
     ]
   }
 }

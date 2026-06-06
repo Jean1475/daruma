@@ -4,11 +4,6 @@ import { ProductPlaceholder } from '../ui/ProductPlaceholder';
 export function HeroAzul() {
   return (
     <section className="bg-daruma-blue text-daruma-cream px-14 pt-[88px] pb-24 relative overflow-hidden">
-      <img 
-        src="/assets/daruma-logo.png" 
-        alt=""
-        className="absolute -right-[180px] -bottom-[180px] w-[720px] h-[720px] opacity-10 saturate-0 pointer-events-none"
-      />
       <div className="relative grid grid-cols-[1.4fr_1fr] gap-16 items-center">
         <div className="reveal">
           <div className="inline-flex items-center gap-2.5 px-3.5 py-2 bg-daruma-gold text-daruma-ink rounded-full font-mono text-[11px] font-semibold tracking-[1.5px] uppercase mb-7">
@@ -18,7 +13,7 @@ export function HeroAzul() {
             La tienda donde <em className="italic font-normal text-daruma-gold">pides el deseo</em> y vienes a buscarlo.
           </h1>
           <p className="mt-[30px] font-sans text-[19px] leading-[1.5] text-daruma-cream/75 max-w-[540px]">
-            Daruma · cartas Pokémon, manga y cómics en Bilbao. Pinta el primer
+            Pokétienda · cartas Pokémon, manga y cómics en Leganés. Pinta el primer
             ojo cuando entras buscando esa carta. El segundo cuando la encuentras.
           </p>
           <div className="flex gap-3 mt-10">

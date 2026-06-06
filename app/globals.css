@@ -95,3 +95,130 @@ button:hover {
     animation: none;
   }
 }
+
+/* ─── Animation keyframes ─────────────────────────────────────────────────── */
+
+@keyframes daruma-ken-burns {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to   { transform: scale(1.05) translate3d(0, 0, 0); }
+}
+
+@keyframes daruma-live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.6); }
+}
+
+@keyframes daruma-wa-entry {
+  from { opacity: 0; transform: translateX(22px) scale(0.88); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes daruma-wa-glow {
+  0%, 100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35); }
+  50%       { box-shadow: 0 4px 32px rgba(37, 211, 102, 0.65), 0 0 0 6px rgba(37, 211, 102, 0.12); }
+}
+
+/* ─── Scroll reveal ───────────────────────────────────────────────────────── */
+
+.daruma-animate-ready .daruma-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity  0.6s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  transition-delay: var(--daruma-delay, 0ms);
+}
+
+.daruma-animate-ready .daruma-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delay helpers */
+.daruma-s1 { --daruma-delay: 65ms; }
+.daruma-s2 { --daruma-delay: 130ms; }
+.daruma-s3 { --daruma-delay: 195ms; }
+.daruma-s4 { --daruma-delay: 260ms; }
+.daruma-s5 { --daruma-delay: 325ms; }
+.daruma-s6 { --daruma-delay: 390ms; }
+
+/* ─── Product card hover ──────────────────────────────────────────────────── */
+
+.daruma-product-card {
+  transition:
+    transform  0.22s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.22s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.daruma-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(14, 21, 56, 0.11);
+}
+
+/* ─── Category tile hover ─────────────────────────────────────────────────── */
+
+.daruma-category-tile {
+  transition:
+    transform  0.28s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.daruma-category-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(14, 21, 56, 0.18);
+}
+
+/* Image zoom inside tile (fill and contain variants) */
+.daruma-category-tile img {
+  transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.daruma-category-tile:hover img {
+  transform: scale(1.07);
+}
+
+/* ─── Hero Ken Burns ──────────────────────────────────────────────────────── */
+
+.daruma-hero-active .daruma-hero-img {
+  animation: daruma-ken-burns 7.5s ease-out forwards;
+}
+
+/* ─── Live dot pulse ──────────────────────────────────────────────────────── */
+
+.daruma-live-dot {
+  animation: daruma-live-pulse 2.2s ease-in-out infinite;
+}
+
+/* ─── WhatsApp float entry + ping ────────────────────────────────────────── */
+
+.daruma-wa-float {
+  animation:
+    daruma-wa-entry 0.65s cubic-bezier(0.25, 1, 0.5, 1) 1.5s both,
+    daruma-wa-glow 2.8s ease-in-out 3s infinite;
+}
+
+/* ─── Reduced motion overrides ───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .daruma-animate-ready .daruma-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .daruma-hero-active .daruma-hero-img,
+  .daruma-live-dot {
+    animation: none !important;
+  }
+
+  .daruma-wa-float {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .daruma-product-card,
+  .daruma-category-tile,
+  .daruma-category-tile img {
+    transition: none !important;
+  }
+}

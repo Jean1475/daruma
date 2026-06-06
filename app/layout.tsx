@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, DM_Sans, JetBrains_Mono, Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 
@@ -27,8 +27,14 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Daruma · Tienda de cartas, manga y cómics",
-  description: "Tienda física en Bilbao especializada en cartas Pokémon, manga y cómics.",
+  title: "Pokétienda · Tienda de cartas, manga y cómics",
+  description: "Tienda física en Leganés, Madrid especializada en cartas Pokémon, manga y cómics.",
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

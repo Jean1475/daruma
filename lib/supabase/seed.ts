@@ -40,8 +40,8 @@ async function seed() {
     category: p.cat as 'pokemon' | 'manga' | 'comics',
     set_name: p.set,
     meta: (p as any).meta || '',
-    tag: p.tag,
-    featured: p.tag === 'Chase',
+    tags: p.tags,
+    featured: p.tags.includes('Chase'),
     available: true,
   }));
 
